@@ -1,69 +1,23 @@
-"use client"
-
-import { auth } from "@/auth";
-import bcrypt from "bcryptjs";
-import { signIn, useSession } from "next-auth/react"
 import { redirect } from "next/navigation";
-import { useState } from "react"
 
-export default function LoginPage() {
+export default function Page() {
 
-    const session = useSession()
+    async function handleLogin(formData: FormData) {
+        'use server';
 
-    console.log(session)
-
-    if(session.status == 'authenticated') redirect("/scan");
-
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [error, setError] = useState("")
-
-    const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-        const res = await signIn("credentials", {
-            email: email,
-            password: password,
-            redirect: false,
-        })
-
-        if (res?.error) {
-            console.log(res)
-            setError("Invalid credentials") 
-        } else {
-            console.log();
-            redirect("/scan");
+        const data = Object.fromEntries(formData);
+        if (data.password == process.env.SYSTEM_PASSWORD) {
+            redirect("/dashboard");
         }
-    } catch (err) {
-        setError("" + err);
     }
-  }
 
-  return (
-    <main className="h-screen flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <h1 className="text-2xl">Clinic Staff Login</h1>
-
-        <input
-          placeholder="Email"
-          className="border p-2 w-full"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {error && <p className="text-red-500">{error}</p>}
-
-        <button className="bg-black text-white p-2 w-full">
-          Login
-        </button>
-      </form>
+    return <main className="flex justify-center p-2 h-[80vh] items-center">
+        <div className="h-fit p-2 border shadow">
+            <h1 className="text-center text-2xl">LOG IN</h1> 
+            <form action={handleLogin}>
+                <input className="border rounded" name="password" type="password" />
+                <button type="submit" className="p-1 rounded border hover:bg-gray-100">Login</button>
+            </form>
+        </div>
     </main>
-  )
 }

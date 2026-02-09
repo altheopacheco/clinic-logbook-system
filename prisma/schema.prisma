@@ -13,35 +13,20 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id String @id @default(uuid())
-  username String @unique
-  email String @unique
-  password String 
-  createdAt DateTime @default(now())
-
-  visits Visit[]
-}
-
 model Student {
-  studentNumber String @id
+  id Int @id
   name String 
-  section String
-  yearLevel Int
 
   visits Visit[]
 }
 
 model Visit {
-  id String @id @default(uuid())
-  studentId String
-  staffId String 
-  timeIn DateTime
+  id Int @id @default(autoincrement())
+  timeIn DateTime 
   timeOut DateTime?
+  duration Int?
 
-  student Student @relation(fields: [studentId], references: [studentNumber])
-  staff User @relation(fields: [staffId], references: [id])
+  studentId Int
 
-  @@index([studentId, timeOut])
+  student Student @relation(fields: [studentId], references: [id])
 }
-
