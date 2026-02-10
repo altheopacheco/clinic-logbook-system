@@ -27,10 +27,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-100`}
       >
         <Navbar />
         {children}
+        {/* <footer className="text-center text-slate-400 pb-2">
+          <p>&copy; 2026 School Clinic System</p>
+          <a href="/privacy-policy">Privacy Policy {" | "}</a>  
+          <a href="/terms-of-service">Terms of Service</a>
+        </footer> */}
       </body>
     </html>
   );
