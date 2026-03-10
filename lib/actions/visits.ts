@@ -27,7 +27,7 @@ export async function createVisit(studentID: string) {
             }
         });
 
-        return visit;
+        return { ...visit, studentName: student.name, type: "in" };
     }
 
     const timeOut = new Date();
@@ -38,7 +38,7 @@ export async function createVisit(studentID: string) {
     const visit = await prisma.visit.update({
         where: { id: activeVisit.id },
         data: { timeOut, duration },
-    })
+    });
 
-    return visit;
+    return { ...visit, studentName: student.name, type: "out" };
 }

@@ -23,6 +23,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import PrivacyPolicy from "./privacy-policy"
 import TermsOfService from "./terms-of-service"
 
+import Image from "next/image"
+
 export function LoginForm({
   className,
   ...props

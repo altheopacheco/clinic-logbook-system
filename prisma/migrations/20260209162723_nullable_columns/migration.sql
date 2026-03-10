@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE "Visit" ALTER COLUMN "duration" DROP NOT NULL,
-ALTER COLUMN "timeOut" DROP NOT NULL;
