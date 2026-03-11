@@ -1,96 +1,128 @@
 "use client";
 
-import {Html5QrcodeScanner} from "html5-qrcode";
+import QrScanner from "qr-scanner";
 import { useEffect, useRef, useState } from "react";
 
 import { createVisit } from "@/lib/actions/visits";
 import { usePathname } from "next/navigation";
-import { Card, CardDescription } from "@/components/ui/card";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import "./video.css";
 import prisma from "@/lib/prisma";
 import { Visit } from "../generated/prisma/browser";
 import { getStudent } from "@/lib/actions/students";
+import toast from "react-hot-toast";
+
+import { useRouter } from "next/navigation";
 
 const IDLE_MESSAGE = "Scan Student QR Code Here"
 
 export default function Scanner() {
 
-    const pathName = usePathname();
-
     const [msg, setMsg] = useState(IDLE_MESSAGE);
-    const [qrData, setQrData] = useState(null);
-
-    const isInit = useRef(false);
+    const [cameras, setCameras] = useState<QrScanner.Camera[]>([]);
+    const [selectedCam, setSelectedCam] = useState<string>("");
     const isCooldown = useRef(false);
+    const [isProcessing, setIsProcessing] = useState(true);
+
+    const scannerRef = useRef<QrScanner>(null);
+
+    const router = useRouter();
 
     useEffect(() => {
-        isInit.current = false;
-    }, [pathName])
 
-    useEffect(() => {
-        setTimeout(() => {
-            if (isInit.current) {
-                return;
-            }
+        QrScanner.listCameras(true).then(result => setCameras(result));
 
-            isInit.current = true;
+        const vidElement = document.getElementById("qr-reader") as HTMLVideoElement;
 
-            const scanner = new Html5QrcodeScanner(
-                "reader",
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 },
-                    aspectRatio: 1.0,
-                },
-                false
-            );
-
-            async function onScanSuccess(text: any, _result: any) {
+        const scanner = new QrScanner(
+            vidElement,
+            async result => {
                 if (isCooldown.current) return;
+                isCooldown.current = true; 
+                setIsProcessing(true);
 
-                isCooldown.current = true;
-                setMsg(`Processing...`);
-                scanner.pause(true);
+                // scannerRef.current?.pause(false);
 
-                const visit = await createVisit(text);
+                // const visit = await createVisit(result.data);
 
-                if ('error' in visit) {
-                    setMsg(`Error scanning ${text}: ${visit.error}`);
-                } else {
-                    const action = visit.type === "in" ? "checked in" : "checked out";
-                    setMsg(`${visit.studentName} ${action} successfully!`);
-                    setQrData(text);
-                }
-
-                console.log(visit);
-
-                setTimeout(() => {
+                toast.promise((async () => {
+                    const visit = await createVisit(result.data);
+                    if ('error' in visit) throw new Error(visit.error);
+                    
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    
+                    return visit;
+                })(), {
+                    loading: "Processing QR Code...",
+                    success: visit => <b>{visit.studentName} logged {visit.type} successfully!</b>,
+                    error: err => <b>Something went wrong: {err.message}</b>
+                })
+                .then(() => {
+                    router.refresh();
+                })
+                .finally(() => {
                     isCooldown.current = false;
-                    setMsg(IDLE_MESSAGE);
-                    scanner.resume();
-                }, 7000);
+                    setIsProcessing(false);
+                });
+            },
+            {
+                highlightScanRegion: true,
+                highlightCodeOutline: true,  
             }
+        );
 
-            function onScanFailure(error: any) {
-                // setMsg(IDLE_MESSAGE)
-                // setQrData(null);
-                // console.warn(error);
-            }
-
-            scanner.render(onScanSuccess, onScanFailure);
-
-            return () => {
-                scanner.clear().catch(() => {});
-            };
-        }, 500);
+        scannerRef.current = scanner;
+        scanner.start();
     }, []);
 
-    return <main className="flex flex-col items-center">
-        <Card className="flex flex-col items-center mt-4 px-6 max-h-[80vh]">
-            <h1 className="text-3xl font-bold h-fit">QR Scanner</h1>
-            <CardDescription>{msg}</CardDescription>
-            <div id="reader" className="w-[320] mx-auto aspect-square overflow-hidden rounded-md"></div>
-        </Card>
-    </main>
+    useEffect(() => {
+        if (!scannerRef.current) return;
+
+        if (cameras.length > 0) {
+            scannerRef.current.setCamera(cameras[0].id);
+            setSelectedCam(cameras[0].id);
+        }
+
+    }, []);
+
+    return <div className="w-fit h-full text-center">
+                <Select value={selectedCam} onValueChange={val => {
+                    if (val == selectedCam) return;
+
+                    setSelectedCam(val);
+                    scannerRef.current?.setCamera(val);
+                    console.log("Selected " + val + " as cameraa device");
+                }}>
+                    <SelectTrigger className="w-full max-w-48 self-start mb-3">
+                        <SelectValue placeholder="Select Device" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                            <SelectLabel>Available Devices</SelectLabel>
+                            {cameras.length == 0 ? "No Devices Available" : cameras.map(cam => (
+                                <SelectItem key={cam.id} value={cam.id} disabled={cam.id == selectedCam}>
+                                    {cam.label}
+                                </SelectItem>
+                            ))}
+                        </SelectGroup>
+                    </SelectContent>
+                </Select>
+                <div className="rounded-lg w-[23vw] h-[23vw] overflow-clip mb-3">
+                    <video id="qr-reader" className="aspect-square object-fill"></video>
+                </div>
+                
+                <h1 className="text-3xl font-bold h-fit">Scan Here!</h1>
+                <CardDescription>Scan your ID here</CardDescription>
+            </div>
 }
