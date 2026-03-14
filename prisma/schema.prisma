@@ -13,6 +13,7 @@ datasource db {
 model Student {
   id Int @id
   name String 
+  gradeLevel Int
 
   visits Visit[]
 }
@@ -21,7 +22,6 @@ model Visit {
   id Int @id @default(autoincrement())
   timeIn DateTime 
   timeOut DateTime?
-  duration Int?
 
   studentId Int
 

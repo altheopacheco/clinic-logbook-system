@@ -1,21 +1,36 @@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatName } from "@/lib/name-format";
+import formatDuration from "@/lib/duration-format";
 import prisma from "@/lib/prisma";
 
-export default async function CompletedVisitsTable() {
+type CompletedVisitsTableProps = {
+    todayOnly?: boolean
+}
+
+export default async function CompletedVisitsTable({todayOnly}: CompletedVisitsTableProps) {
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const completedVisits = await prisma.visit.findMany({
         where: {
             timeOut: {
                 not: null
-            }
+            },
+            timeIn: todayOnly ? {
+                gte: today
+            } : undefined
         },
         include: {
             student: true
-        }
+        },
+        orderBy: [
+            {timeOut: 'desc'},
+            {timeIn: 'desc'}
+        ]
     });
 
-    return <Table>
+    return <Table id="completedVisitsTable">
       <TableCaption>A list of completed visits.</TableCaption>
       <TableHeader>
         <TableRow>  
@@ -31,11 +46,11 @@ export default async function CompletedVisitsTable() {
           return <TableRow key={visit.id} className="">
               <TableCell className="p-2 capitalize">{formatName(visit.student.name)}</TableCell>
               <TableCell className="p-2">{new Intl.DateTimeFormat('en-PH', {
-                  timeStyle: 'medium'
+                  timeStyle: 'short'
               }).format(visit.timeIn)}</TableCell>
               {
                   visit.timeOut && <TableCell className="p-2">{new Intl.DateTimeFormat('en-PH', {
-                      timeStyle: 'medium'
+                      timeStyle: 'short'
                   }).format(visit.timeOut)}</TableCell>
               }
               {
@@ -43,7 +58,9 @@ export default async function CompletedVisitsTable() {
                       dateStyle: 'medium'
                   }).format(visit.timeIn)}</TableCell>
               }
-              <TableCell className="p-2">{visit.duration} min(s)</TableCell>
+              <TableCell className="p-2">{(visit.timeOut && visit.timeIn) &&
+                formatDuration(visit.timeOut.getTime() -visit.timeIn.getTime())
+              }</TableCell>
           </TableRow>
           })
       }

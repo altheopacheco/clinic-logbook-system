@@ -18,9 +18,6 @@ import {
 } from "@/components/ui/select"
 
 import "./video.css";
-import prisma from "@/lib/prisma";
-import { Visit } from "../generated/prisma/browser";
-import { getStudent } from "@/lib/actions/students";
 import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
@@ -33,7 +30,7 @@ export default function Scanner() {
     const [cameras, setCameras] = useState<QrScanner.Camera[]>([]);
     const [selectedCam, setSelectedCam] = useState<string>("");
     const isCooldown = useRef(false);
-    const [isProcessing, setIsProcessing] = useState(true);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const scannerRef = useRef<QrScanner>(null);
 
@@ -52,7 +49,7 @@ export default function Scanner() {
                 isCooldown.current = true; 
                 setIsProcessing(true);
 
-                // scannerRef.current?.pause(false);
+                scannerRef.current?.pause(false);
 
                 // const visit = await createVisit(result.data);
 
@@ -60,7 +57,7 @@ export default function Scanner() {
                     const visit = await createVisit(result.data);
                     if ('error' in visit) throw new Error(visit.error);
                     
-                    await new Promise(resolve => setTimeout(resolve, 3000));
+                    await new Promise(resolve => setTimeout(resolve, 2000));
                     
                     return visit;
                 })(), {
@@ -74,6 +71,7 @@ export default function Scanner() {
                 .finally(() => {
                     isCooldown.current = false;
                     setIsProcessing(false);
+                    scannerRef.current?.start();
                 });
             },
             {
@@ -118,11 +116,11 @@ export default function Scanner() {
                         </SelectGroup>
                     </SelectContent>
                 </Select>
-                <div className="rounded-lg w-[23vw] h-[23vw] overflow-clip mb-3">
+                <div className="rounded-lg w-[23vw] h-[23vw] overflow-clip mb-3 bg-muted">
                     <video id="qr-reader" className="aspect-square object-fill"></video>
                 </div>
                 
-                <h1 className="text-3xl font-bold h-fit">Scan Here!</h1>
-                <CardDescription>Scan your ID here</CardDescription>
+                <h1 className="text-3xl font-bold h-fit">{isProcessing ? "Processing..." : "Scan Here!"}</h1>
+                <CardDescription>{isProcessing ? "Please wait.x" : "Scan your ID here"}</CardDescription>
             </div>
 }

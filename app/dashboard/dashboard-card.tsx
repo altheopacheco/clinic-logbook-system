@@ -7,7 +7,7 @@ interface CardProps {
 }
 
 export default function DashboardCard({title, content, Icon}: CardProps) {
-    return <Card className="">
+    return <Card className="w-[20vw]">
         <CardHeader>
           <CardDescription>{title}</CardDescription>
           <CardTitle className="text-3xl font-semibold tabular-nums @[250px]/card:text-3xl flex items-center">

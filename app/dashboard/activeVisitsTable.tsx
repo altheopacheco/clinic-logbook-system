@@ -10,27 +10,32 @@ export default async function ActiveVisitsTable() {
         },
         include: {
             student: true
-        }
+        },
+        orderBy: [
+            {timeOut: 'desc'},
+            {timeIn: 'desc'},
+            {}
+        ]
     });
 
     return <Table>
-      <TableCaption>A list of current active visits.</TableCaption>
+      <TableCaption>A list of students currently inside the clinic.</TableCaption>
       <TableHeader>
         <TableRow>  
-          <TableHead>Name</TableHead>
           <TableHead>Time-In</TableHead>
+          <TableHead>Name</TableHead>
           <TableHead>Date</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {activeVisits.map(visit => {
             return <TableRow key={visit.id} className="">
+                <TableCell className="p-2">{new Intl.DateTimeFormat('en-PH', {
+                    timeStyle: 'short'
+                }).format(visit.timeIn)}</TableCell>
                 <TableCell className="p-2 capitalize">{formatName(visit.student.name)}</TableCell>
                 <TableCell className="p-2">{new Intl.DateTimeFormat('en-PH', {
-                    timeStyle: 'medium'
-                }).format(visit.timeIn)}</TableCell>
-                <TableCell className="p-2">{new Intl.DateTimeFormat('en-PH', {
-                    dateStyle: 'short',
+                    dateStyle: 'medium',
                 }).format(visit.timeIn)}</TableCell>
             </TableRow>
             })

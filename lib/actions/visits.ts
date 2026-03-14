@@ -31,13 +31,10 @@ export async function createVisit(studentID: string) {
     }
 
     const timeOut = new Date();
-    const duration = Math.floor(
-        (timeOut.getTime() - activeVisit.timeIn.getTime()) / 60000
-    );
 
     const visit = await prisma.visit.update({
         where: { id: activeVisit.id },
-        data: { timeOut, duration },
+        data: { timeOut },
     });
 
     return { ...visit, studentName: student.name, type: "out" };

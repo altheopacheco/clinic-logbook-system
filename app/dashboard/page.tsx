@@ -4,26 +4,32 @@ import CompletedVisitsTable from "./completedVisitsTable";
 import Cards from "./cards";
 
 import { Card, CardContent, CardHeader, CardDescription, CardTitle, CardFooter } from "@/components/ui/card"
+import ExportVisitsButton from "./exportVisitsButton";
+
+
 
 export default async function Page() {
 
     await protectedRouteCheck();
 
-    return <main className="p-4 flex">
+    return <div className="">
         <Cards />
-        <div className="flex justify-center gap-x-4 w-full ml-4">
-            <Card className="w-[41%] h-fit max-h-[83vh]">
-                <CardContent className="overflow-y-scroll">
-                    <CardTitle className="text-2xl mb-4">Active Visits</CardTitle>
+        <div className="flex gap-x-4">
+            <Card className="flex-2 max-h-[60vh]">
+                <CardContent className="overflow-auto">
+                    <CardTitle className="text-xl mb-4">Active Visits</CardTitle>
                     <ActiveVisitsTable />
                 </CardContent>
             </Card>
-            <Card className="w-[59%] max-h-[83vh]">
+            <Card className="flex-3 max-h-[60vh]">
                 <CardContent className="overflow-y-scroll">
-                    <CardTitle className="text-2xl mb-4">Completed Visits</CardTitle>
+                    <div className="flex justify-between">
+                        <CardTitle className="text-xl mb-4">Completed Visits</CardTitle>
+                        <ExportVisitsButton />
+                    </div>
                     <CompletedVisitsTable />
                 </CardContent>
             </Card>
         </div>
-    </main>
+    </div>
 }
