@@ -2,6 +2,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { formatName } from "@/lib/name-format";
 import formatDuration from "@/lib/duration-format";
 import prisma from "@/lib/prisma";
+import { Badge } from "@/components/ui/badge";
 
 type CompletedVisitsTableProps = {
     todayOnly?: boolean
@@ -31,7 +32,7 @@ export default async function CompletedVisitsTable({todayOnly}: CompletedVisitsT
     });
 
     return <Table id="completedVisitsTable">
-      <TableCaption>A list of completed visits.</TableCaption>
+      <TableCaption>A list of {todayOnly ? "Recent" : "Completed"} visits.</TableCaption>
       <TableHeader>
         <TableRow>  
           <TableHead>Name</TableHead>
@@ -54,9 +55,13 @@ export default async function CompletedVisitsTable({todayOnly}: CompletedVisitsT
                   }).format(visit.timeOut)}</TableCell>
               }
               {
-                  visit.timeIn && <TableCell className="p-2">{new Intl.DateTimeFormat('en-PH', {
-                      dateStyle: 'medium'
-                  }).format(visit.timeIn)}</TableCell>
+                  visit.timeIn && <TableCell className="p-2">
+                            {visit.timeIn > today ? <Badge variant="default">Today</Badge> : <Badge variant="secondary">{new Intl.DateTimeFormat('en-PH', {
+                            dateStyle: 'medium'
+                        }).format(visit.timeIn)}
+                        </Badge>}
+                    
+                  </TableCell>
               }
               <TableCell className="p-2">{(visit.timeOut && visit.timeIn) &&
                 formatDuration(visit.timeOut.getTime() -visit.timeIn.getTime())

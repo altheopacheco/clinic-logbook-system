@@ -2,7 +2,12 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { formatName } from "@/lib/name-format";
 import prisma from "@/lib/prisma";
 
-export default async function CompletedVisitsTable() {
+export default async function CompletedVisitsTable({todayOnly = false}: {
+    todayOnly?: boolean
+}) {
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
     const completedVisits = await prisma.visit.findMany({
         include: {
@@ -11,7 +16,12 @@ export default async function CompletedVisitsTable() {
         orderBy: [
             {timeIn: 'desc'},
             {timeOut: 'desc'}
-        ]
+        ],
+        where: {
+            timeIn: todayOnly ? {
+                gte: today
+            } : undefined
+        }
     });
 
     return <Table>

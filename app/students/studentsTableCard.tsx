@@ -3,7 +3,8 @@ import StudentsTable from "./studentsTable";
 import prisma from "@/lib/prisma";
 import StudentsPagination from "./studentsPagination";
 import GradeLevelTabs from "./gradeLevelTabs";
-import ImportStudentsButton from "./importStudentsButton";
+import GradeLevelDropdown from "./gradeLevelTabs";
+import GradeLevelSelect from "./gradeLevelSelect";
 
 type StudentsTableCardProps = {
     gradeLevel?: number,
@@ -30,8 +31,11 @@ export default async function StudentsTableCard({gradeLevel, page = 1, rows = 15
         <CardTitle className="text-2xl">Grade {gradeLevel}</CardTitle>
         <CardDescription>{total} Students</CardDescription>
         <CardAction>
-            <div className="flex gap-2 w-full justify-between">
+            <div className=" gap-2 w-full justify-between md:block hidden">
                 <GradeLevelTabs />
+            </div>
+            <div className=" gap-2 w-full justify-between md:hidden block">
+                <GradeLevelSelect />
             </div>
         </CardAction>
     </CardHeader>

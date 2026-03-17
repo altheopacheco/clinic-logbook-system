@@ -1,11 +1,8 @@
 "use server";
 
-import { error } from "console";
 import prisma from "../prisma";
-import {read, readFile, utils, WorkBook, WorkSheet} from "xlsx";
+import {read, utils, WorkBook} from "xlsx";
 import { revalidatePath } from "next/cache";
-import { Student } from "@/generated/prisma/browser";
-import toast from "react-hot-toast";
 
 export async function getStudent(id: number) {
     return await prisma.student.findUnique({

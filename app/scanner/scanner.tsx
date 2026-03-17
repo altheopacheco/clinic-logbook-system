@@ -4,8 +4,7 @@ import QrScanner from "qr-scanner";
 import { useEffect, useRef, useState } from "react";
 
 import { createVisit } from "@/lib/actions/visits";
-import { usePathname } from "next/navigation";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { CardDescription } from "@/components/ui/card";
 
 import {
   Select,
@@ -21,12 +20,10 @@ import "./video.css";
 import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
-
-const IDLE_MESSAGE = "Scan Student QR Code Here"
+import { Button } from "@/components/ui/button";
 
 export default function Scanner() {
 
-    const [msg, setMsg] = useState(IDLE_MESSAGE);
     const [cameras, setCameras] = useState<QrScanner.Camera[]>([]);
     const [selectedCam, setSelectedCam] = useState<string>("");
     const isCooldown = useRef(false);
@@ -36,28 +33,35 @@ export default function Scanner() {
 
     const router = useRouter();
 
+    // useEffect(() => {
+    //     QrScanner.listCameras(true).then(result => setCameras(result));
+    // }, []);
+
+    // useEffect(() => {
+    //     if (cameras.length === 0 || !scannerRef.current) return;
+
+    //     const defaultCam = cameras[0].id;
+    //     scannerRef.current.setCamera(defaultCam);
+    //     setSelectedCam(defaultCam);
+    // }, [cameras]);
+
     useEffect(() => {
-
-        QrScanner.listCameras(true).then(result => setCameras(result));
-
         const vidElement = document.getElementById("qr-reader") as HTMLVideoElement;
 
         const scanner = new QrScanner(
             vidElement,
             async result => {
+                scannerRef.current?.pause(true);
+                
                 if (isCooldown.current) return;
                 isCooldown.current = true; 
                 setIsProcessing(true);
-
-                scannerRef.current?.pause(false);
-
-                // const visit = await createVisit(result.data);
 
                 toast.promise((async () => {
                     const visit = await createVisit(result.data);
                     if ('error' in visit) throw new Error(visit.error);
                     
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 700));
                     
                     return visit;
                 })(), {
@@ -65,8 +69,9 @@ export default function Scanner() {
                     success: visit => <b>{visit.studentName} logged {visit.type} successfully!</b>,
                     error: err => <b>Something went wrong: {err.message}</b>
                 })
-                .then(() => {
+                .then(async() => {
                     router.refresh();
+                    await new Promise(resolve => setTimeout(resolve, 1300));
                 })
                 .finally(() => {
                     isCooldown.current = false;
@@ -82,25 +87,17 @@ export default function Scanner() {
 
         scannerRef.current = scanner;
         scanner.start();
-    }, []);
 
-    useEffect(() => {
-        if (!scannerRef.current) return;
-
-        if (cameras.length > 0) {
-            scannerRef.current.setCamera(cameras[0].id);
-            setSelectedCam(cameras[0].id);
-        }
-
+        return () => scanner.destroy();
     }, []);
 
     return <div className="w-fit h-full text-center">
-                <Select value={selectedCam} onValueChange={val => {
+                {/* <Select value={selectedCam} onValueChange={val => {
                     if (val == selectedCam) return;
 
                     setSelectedCam(val);
                     scannerRef.current?.setCamera(val);
-                    console.log("Selected " + val + " as cameraa device");
+                    console.log("Selected " + val + " as camera device");
                 }}>
                     <SelectTrigger className="w-full max-w-48 self-start mb-3">
                         <SelectValue placeholder="Select Device" />
@@ -115,11 +112,10 @@ export default function Scanner() {
                             ))}
                         </SelectGroup>
                     </SelectContent>
-                </Select>
+                </Select> */}
                 <div className="rounded-lg w-[23vw] h-[23vw] overflow-clip mb-3 bg-muted">
                     <video id="qr-reader" className="aspect-square object-fill"></video>
                 </div>
-                
                 <h1 className="text-3xl font-bold h-fit">{isProcessing ? "Processing..." : "Scan Here!"}</h1>
                 <CardDescription>{isProcessing ? "Please wait.x" : "Scan your ID here"}</CardDescription>
             </div>

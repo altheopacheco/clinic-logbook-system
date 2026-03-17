@@ -1,6 +1,8 @@
 "use server"
 
+import { Prisma } from "@/generated/prisma/client";
 import prisma from "../prisma";
+import { revalidatePath } from "next/cache";
 
 export async function createVisit(studentID: string) {
     const id = parseInt(studentID);
@@ -38,4 +40,19 @@ export async function createVisit(studentID: string) {
     });
 
     return { ...visit, studentName: student.name, type: "out" };
+}
+
+export async function clearVisits(visits: Prisma.VisitGetPayload<{
+    include: { student: true }
+}>[]) {
+    await prisma.visit.updateMany({
+        where: {
+            id: { in: visits.map(v => v.id) }
+        },
+        data: {
+            timeOut: new Date()
+        }
+    });
+
+    revalidatePath("/dashboard");
 }

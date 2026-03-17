@@ -1,22 +1,16 @@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatName } from "@/lib/name-format";
+import { Prisma } from "../generated/prisma/client";
 import prisma from "@/lib/prisma";
 
-export default async function ActiveVisitsTable() {
+type Props = {
+    activeVisits: Awaited<ReturnType<typeof prisma.visit.findMany<{
+        include: { student: true }
+    }>>>
+}
 
-  const activeVisits = await prisma.visit.findMany({
-        where: {
-            timeOut: null
-        },
-        include: {
-            student: true
-        },
-        orderBy: [
-            {timeOut: 'desc'},
-            {timeIn: 'desc'},
-            {}
-        ]
-    });
+export default async function ActiveVisitsTable({activeVisits}: Props
+) {
 
     return <Table>
       <TableCaption>A list of students currently inside the clinic.</TableCaption>

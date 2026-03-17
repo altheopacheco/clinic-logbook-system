@@ -2,11 +2,15 @@
 
 import { Button } from "@/components/ui/button"
 import { FileSpreadsheet } from "lucide-react"
-import { useEffect, useRef } from "react"
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function ExportVisitsButton() {
 
-    const handleExport = () => {
+    const [isLoading, setLoading] = useState(false);
+
+    const handleExport = async () => {
+        setLoading(true);
         const table = document.getElementById("completedVisitsTable");
         if (!table) return;
 
@@ -22,11 +26,26 @@ export default function ExportVisitsButton() {
         const a = document.createElement("a");
         a.href = url;
         a.download = "visitsTable.xls";
+
+        document.body.appendChild(a);
         a.click();
-        URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        setTimeout(() => URL.revokeObjectURL(url), 150);
+        setLoading(false);
     };
 
-    return <Button variant="outline" size="sm" onClick={handleExport}>
-            <FileSpreadsheet /> Export
+    const handleSubmit = async () => {
+        await toast.promise(handleExport(), {
+            loading: "Exporting visits...",
+            success: "Sucessfully exported visit data!",
+            error: "Error exporting data."
+        });
+    }
+
+    return (
+        <Button variant="default" size="sm" onClick={handleSubmit} disabled={isLoading}>
+            <FileSpreadsheet /> {isLoading ? "Exporting..." : "Export"}
         </Button>
+    );
 }

@@ -1,7 +1,5 @@
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { StudentStatus } from "@/generated/prisma/enums";
 import { formatName } from "@/lib/name-format";
-import prisma from "@/lib/prisma";
 
 const PAGE_SIZE = 20;
 
@@ -11,7 +9,6 @@ type StudentsTableProps = {
         gradeLevel: number;
         id: number;
         name: string;
-        status: StudentStatus;
     }[] 
 }
 
