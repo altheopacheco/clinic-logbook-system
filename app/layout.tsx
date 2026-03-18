@@ -40,7 +40,7 @@ export default function RootLayout({
         >
           <Navbar />
           <Toaster />
-          <main className="p-4">
+          <main className="p-4 bg-slate-100 dark:bg-gray-950 min-h-[calc(100vh-16px-52px)]">
             {children}
           </main>
         </ThemeProvider>

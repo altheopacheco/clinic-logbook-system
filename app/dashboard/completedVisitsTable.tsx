@@ -38,7 +38,9 @@ export default async function CompletedVisitsTable({todayOnly}: CompletedVisitsT
           <TableHead>Name</TableHead>
           <TableHead>Time-In</TableHead>
           <TableHead>Time-Out</TableHead>
-          <TableHead>Date</TableHead>
+          {!todayOnly &&
+            <TableHead>Date</TableHead>
+          }
           <TableHead>Duration</TableHead>
         </TableRow>
       </TableHeader>
@@ -55,7 +57,7 @@ export default async function CompletedVisitsTable({todayOnly}: CompletedVisitsT
                   }).format(visit.timeOut)}</TableCell>
               }
               {
-                  visit.timeIn && <TableCell className="p-2">
+                  !todayOnly && <TableCell className="p-2">
                             {visit.timeIn > today ? <Badge variant="default">Today</Badge> : <Badge variant="secondary">{new Intl.DateTimeFormat('en-PH', {
                             dateStyle: 'medium'
                         }).format(visit.timeIn)}

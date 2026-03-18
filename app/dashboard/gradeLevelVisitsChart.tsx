@@ -60,7 +60,7 @@ export const GradeLevelVisitsChart = ({data} : Props) => {
 
     console.log(data)
   return (
-    <Card className="md:row-span-2 py-4 gap-0 w-full hidden md:block md:col-span-1">
+    <Card className="md:row-span-2 py-4 gap-0 w-full hidden lg:block md:col-span-1 h-full">
         <CardHeader>
             <CardTitle className="text-xl">Clinic Visits - Today</CardTitle>
             <CardDescription>By Grade Level</CardDescription>

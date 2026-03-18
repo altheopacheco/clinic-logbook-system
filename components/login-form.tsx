@@ -67,41 +67,7 @@ export function LoginForm({
             </form>
           </CardContent>
         </Card>
-        <FieldDescription className="px-6 text-center">
-          By clicking continue, you agree to our {" "}
-        <Dialog>
-            <DialogTrigger asChild>
-              <button className="underline">Terms of Service</button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  Terms of Service
-                </DialogTitle>
-              </DialogHeader>
-              <div className="h-[80vh] overflow-y-auto">
-                <TermsOfService />
-              </div>
-            </DialogContent>
-        </Dialog>
-          {" "} and {" "}
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="underline">Privacy Policy</button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>
-                  Privacy Policy
-                </DialogTitle>
-              </DialogHeader>
-              <div className="h-[80vh] overflow-y-auto">
-                <PrivacyPolicy />
-              </div>
-            </DialogContent>
-        </Dialog>
-          .
-        </FieldDescription>
+        <FieldDescription className="text-center">Copyright © 2026 Altheo A. Pacheco. All rights reserved.</FieldDescription>
     </div>
   )
 }

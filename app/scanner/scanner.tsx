@@ -6,21 +6,10 @@ import { useEffect, useRef, useState } from "react";
 import { createVisit } from "@/lib/actions/visits";
 import { CardDescription } from "@/components/ui/card";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 import "./video.css";
 import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 
 export default function Scanner() {
 
@@ -91,7 +80,7 @@ export default function Scanner() {
         return () => scanner.destroy();
     }, []);
 
-    return <div className="w-fit h-full text-center">
+    return <div className="w-full h-full text-center lg:col-span-2">
                 {/* <Select value={selectedCam} onValueChange={val => {
                     if (val == selectedCam) return;
 
@@ -113,7 +102,7 @@ export default function Scanner() {
                         </SelectGroup>
                     </SelectContent>
                 </Select> */}
-                <div className="rounded-lg w-[23vw] h-[23vw] overflow-clip mb-3 bg-muted">
+                <div className="rounded-lg max-w-[23vw] max-h-[23vw] overflow-clip mb-3 bg-muted mx-auto">
                     <video id="qr-reader" className="aspect-square object-fill"></video>
                 </div>
                 <h1 className="text-3xl font-bold h-fit">{isProcessing ? "Processing..." : "Scan Here!"}</h1>

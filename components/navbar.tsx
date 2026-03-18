@@ -24,6 +24,7 @@ export default async function Navbar() {
                 <>
                     <Link href="/dashboard" className="h-fit md:block hidden">Dashboard</Link>
                     <Link href="/students" className="h-fit md:block hidden">Students</Link>
+                    <Link href="/visits" className="h-fit md:block hidden">Visits</Link>
                     <Link href="/scanner" className="h-fit md:block hidden">Scanner</Link>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild className="md:hidden block">
@@ -43,25 +44,10 @@ export default async function Navbar() {
                           <DropdownMenuItem>
                             <Link href="/scanner" className="h-fit">Scanner</Link>
                           </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Link href="/visits" className="h-fit">Visits</Link>
+                          </DropdownMenuItem>
                         </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" className="w-full" size='sm'>Logout</Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Log Out?</AlertDialogTitle>
-                              <AlertDialogDescription>Are you sure you wish to log out?</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <form>
-                                <AlertDialogAction type="submit" variant="destructive" onClick={logout}>Logout</AlertDialogAction>
-                              </form>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
                       </DropdownMenuContent>
                     </DropdownMenu>
                     <AlertDialog>
@@ -76,9 +62,9 @@ export default async function Navbar() {
                           <AlertDialogDescription>Are you sure you wish to log out?</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogCancel size="sm">Cancel</AlertDialogCancel>
                           <form>
-                            <AlertDialogAction type="submit" variant="destructive" onClick={logout}>Logout</AlertDialogAction>
+                            <AlertDialogAction type="submit" variant="destructive" size="sm" onClick={logout}>Logout</AlertDialogAction>
                           </form>
                         </AlertDialogFooter>
                       </AlertDialogContent>
