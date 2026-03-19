@@ -10,6 +10,7 @@ import "./video.css";
 import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
+import { formatName } from "@/lib/name-format";
 
 export default function Scanner() {
 
@@ -48,15 +49,18 @@ export default function Scanner() {
 
                 toast.promise((async () => {
                     const visit = await createVisit(result.data);
-                    if ('error' in visit) throw new Error(visit.error);
+                    if ('error' in visit) {
+                        console.error(visit.error);
+                        throw new Error(visit.error);
+                    };
                     
                     await new Promise(resolve => setTimeout(resolve, 700));
                     
                     return visit;
                 })(), {
                     loading: "Processing QR Code...",
-                    success: visit => <b>{visit.studentName} logged {visit.type} successfully!</b>,
-                    error: err => <b>Something went wrong: {err.message}</b>
+                    success: visit => <><p className="capitalize">{formatName(visit.studentName)}</p> logged {visit.type.toLowerCase()} successfully!</>,
+                    error: _ => "QR Code Not Recognized."
                 })
                 .then(async() => {
                     router.refresh();
