@@ -25,17 +25,17 @@ export default function ImportStudentsButton() {
 
     return <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                <Button size="sm" variant="outline" className="">
-                    <UserRoundPlus />
-                    Import Students
-                </Button>
+                    <Button size="sm" variant="outline" className="">
+                        <UserRoundPlus />
+                        Import Students
+                    </Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-sm">
                     <form action={handleSubmit}>
                     <DialogHeader>
-                        <DialogTitle>Import Students</DialogTitle>
+                        <DialogTitle>Export Visit Records</DialogTitle>
                         <DialogDescription>
-                        Import .xlsx file of student records containing their ID and Names
+                        Select a date range for visit records to export
                         </DialogDescription>
                     </DialogHeader>
                         <Field className="mt-2">

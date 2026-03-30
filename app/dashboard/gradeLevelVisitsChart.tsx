@@ -57,8 +57,6 @@ export const GradeLevelVisitsChart = ({data} : Props) => {
     // const maxGrade = data.find(d => Number(d.visits) == maxVisit)?.gradeLevel;
 
     const chartData = data.map((v, i) => ({...v, ...fills[i]}));
-
-    console.log(data)
   return (
     <Card className="md:row-span-2 py-4 gap-0 w-full hidden lg:block md:col-span-1 h-full">
         <CardHeader>

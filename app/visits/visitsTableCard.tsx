@@ -37,7 +37,7 @@ export default async function VisitsTableCard({gradeLevel, page = 1, rows = 15}:
             `Grade ${gradeLevel} Visits` : "All Visits"
         }</CardTitle>
         <CardDescription>{visits.length} Visits</CardDescription>
-        <CardAction>
+        <CardAction >
             <div className=" gap-2 w-full justify-between flex">
                 <GradeLevelSelect />
                 <ExportVisitsButton visits={visits} gradeLevel={gradeLevel || 13}/>

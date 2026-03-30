@@ -42,10 +42,10 @@ export default async function Navbar() {
                             <Link href="/students" className="h-fit">Students</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <Link href="/scanner" className="h-fit">Scanner</Link>
+                            <Link href="/visits" className="h-fit">Visits</Link>
                           </DropdownMenuItem>
                           <DropdownMenuItem>
-                            <Link href="/visits" className="h-fit">Visits</Link>
+                            <Link href="/scanner" className="h-fit">Scanner</Link>
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                       </DropdownMenuContent>
@@ -63,8 +63,8 @@ export default async function Navbar() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel size="sm">Cancel</AlertDialogCancel>
-                          <form>
-                            <AlertDialogAction type="submit" variant="destructive" size="sm" onClick={logout}>Logout</AlertDialogAction>
+                          <form className="w-full border">
+                            <AlertDialogAction type="submit" variant="destructive" size="sm" onClick={logout} className="w-full lg:w-fit">Logout</AlertDialogAction>
                           </form>
                         </AlertDialogFooter>
                       </AlertDialogContent>

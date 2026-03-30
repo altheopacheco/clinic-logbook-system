@@ -8,6 +8,11 @@ import { Prisma } from "@/generated/prisma/client";
 
 import * as XLSX from 'xlsx';
 import formatDuration from "@/lib/duration-format";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import DatePickerWithRange from "@/components/date-picker-with-range";
 
 export default function ExportVisitsButton({ visits, gradeLevel } : {
     gradeLevel: number,
@@ -18,63 +23,106 @@ export default function ExportVisitsButton({ visits, gradeLevel } : {
     }>[]
 }) {
 
+    const [open, setOpen] = useState(false);
     const [isLoading, setLoading] = useState(false);
 
-    const handleExport = async () => {
+    const handleExport = async (filteredVisits: typeof visits) => {
         setLoading(true);
 
-        if (!visits) {
-            toast.error("No visit records");
-            return
-        };
+        if (!filteredVisits || filteredVisits.length === 0) {
+            toast.error("No visit records for selected range");
+            setLoading(false);
+            return;
+        }
 
-        const data = visits.map(v => ({
+        const data = filteredVisits.map(v => ({
             "Ref. Number": v.id,
             "Time In": v.timeIn,
             "Time Out": v.timeOut,
-            Duration: v.timeOut ? 
+            Duration: v.timeOut ?
                 formatDuration(v.timeOut.getTime() - v.timeIn.getTime()) : "N/A",
             "Student ID": v.studentId,
             "Student Name": v.student.name,
             "Grade Level": v.student.gradeLevel
         }));
-        
+
         const worksheet = XLSX.utils.json_to_sheet(data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Visit Records");
 
         worksheet["!cols"] = [
-            { wch: 10 }, 
-            { wch: 10 }, 
-            { wch: 10 }, 
-            { wch: 10 }, 
-            { wch: 11 }, 
-            { wch: 32 }, 
-            { wch: 9 }, 
+            { wch: 10 },
+            { wch: 10 },
+            { wch: 10 },
+            { wch: 10 },
+            { wch: 11 },
+            { wch: 32 },
+            { wch: 9 },
         ];
 
-        const timestamp = new Date().toLocaleDateString('en-PH', {
-            dateStyle: "medium"
-        });
-
+        const toLabel = new Date(filteredVisits[0].timeIn).toLocaleDateString('en-PH', { dateStyle: "medium" });
+        const fromLabel = new Date(filteredVisits[filteredVisits.length - 1].timeIn).toLocaleDateString('en-PH', { dateStyle: "medium" });
         const isAll = gradeLevel == 13;
+        const gradeLabel = isAll ? "All Levels" : `Grade ${gradeLevel}`;
 
-        XLSX.writeFile(workbook, `${timestamp}_Visit_Records-` + (isAll ? "All Levels" : `Grade ${gradeLevel}`) + ".xlsx");
+        const dateLabel = fromLabel === toLabel ? fromLabel : `${fromLabel}_to_${toLabel}`;
+
+        XLSX.writeFile(workbook, `${dateLabel}_Visit_Records-${gradeLabel}.xlsx`);
 
         setLoading(false);
     };
 
-    const handleSubmit = async () => {
-        await toast.promise(handleExport(), {
+    const handleSubmit = async (e: FormData) => {
+        const dateFrom = e.get("dateFrom") as string;
+        const dateTo = e.get("dateTo") as string;
+
+        if (!dateFrom || !dateTo) {
+            toast.error("Please select a date range.");
+            return;
+        }
+
+        const from = new Date(dateFrom);
+        const to = new Date(dateTo);
+        to.setHours(23, 59, 59, 999); // include all visits on the last day
+
+        const filtered = visits?.filter(v => v.timeIn >= from && v.timeIn <= to);
+
+        await toast.promise(handleExport(filtered), {
             loading: "Exporting visits...",
-            success: "Sucessfully exported visit data!",
+            success: "Successfully exported visit data!",
             error: "Error exporting data."
         });
-    }
+    };
 
     return (
-        <Button variant="green" size="sm" onClick={handleSubmit} disabled={isLoading}>
-            <FileSpreadsheet /> {isLoading ? "Exporting..." : "Export"}
-        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button variant="green" size="sm" disabled={isLoading}>
+                    <FileSpreadsheet /> {isLoading ? "Exporting..." : "Export"}
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-sm">
+                <form action={handleSubmit}>
+                <DialogHeader>
+                    <DialogTitle>Export Visit Records</DialogTitle>
+                    <DialogDescription>
+                    Select a date range for visit records to export
+                    </DialogDescription>
+                </DialogHeader>
+                    <Field className="mt-2">
+                        <Label htmlFor="records">Date Range</Label>
+                        <DatePickerWithRange />
+                    </Field>
+                <DialogFooter className="mt-3">
+                    <DialogClose asChild>
+                        <Button variant="outline" size="sm">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit" size="sm" disabled={isLoading}>
+                        {isLoading ? "Exporting..." : "Export"}
+                    </Button>
+                </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }

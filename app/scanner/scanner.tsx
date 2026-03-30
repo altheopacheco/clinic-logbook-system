@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 
 import { useRouter } from "next/navigation";
 import { formatName } from "@/lib/name-format";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Scanner() {
 
@@ -23,17 +24,15 @@ export default function Scanner() {
 
     const router = useRouter();
 
-    // useEffect(() => {
-    //     QrScanner.listCameras(true).then(result => setCameras(result));
-    // }, []);
+    useEffect(() => {
+        QrScanner.listCameras(true).then(result => {
+            setCameras(result);
 
-    // useEffect(() => {
-    //     if (cameras.length === 0 || !scannerRef.current) return;
-
-    //     const defaultCam = cameras[0].id;
-    //     scannerRef.current.setCamera(defaultCam);
-    //     setSelectedCam(defaultCam);
-    // }, [cameras]);
+            if (result.length > 0) {
+                setSelectedCam(result[0].id); 
+            }
+        });
+    }, []);
 
     useEffect(() => {
         const vidElement = document.getElementById("qr-reader") as HTMLVideoElement;
@@ -54,8 +53,6 @@ export default function Scanner() {
                         throw new Error(visit.error);
                     };
                     
-                    await new Promise(resolve => setTimeout(resolve, 700));
-                    
                     return visit;
                 })(), {
                     loading: "Processing QR Code...",
@@ -64,7 +61,7 @@ export default function Scanner() {
                 })
                 .then(async() => {
                     router.refresh();
-                    await new Promise(resolve => setTimeout(resolve, 1300));
+                    await new Promise(resolve => setTimeout(resolve, 3000));
                 })
                 .finally(() => {
                     isCooldown.current = false;
@@ -73,6 +70,7 @@ export default function Scanner() {
                 });
             },
             {
+                preferredCamera: "environment",
                 highlightScanRegion: true,
                 highlightCodeOutline: true,  
             }
@@ -85,31 +83,38 @@ export default function Scanner() {
     }, []);
 
     return <div className="w-full h-full text-center lg:col-span-2">
-                {/* <Select value={selectedCam} onValueChange={val => {
-                    if (val == selectedCam) return;
-
-                    setSelectedCam(val);
-                    scannerRef.current?.setCamera(val);
-                    console.log("Selected " + val + " as camera device");
-                }}>
-                    <SelectTrigger className="w-full max-w-48 self-start mb-3">
-                        <SelectValue placeholder="Select Device" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                            <SelectLabel>Available Devices</SelectLabel>
-                            {cameras.length == 0 ? "No Devices Available" : cameras.map(cam => (
-                                <SelectItem key={cam.id} value={cam.id} disabled={cam.id == selectedCam}>
-                                    {cam.label}
-                                </SelectItem>
-                            ))}
-                        </SelectGroup>
-                    </SelectContent>
-                </Select> */}
+                <div className="text-start">
+                    <p className="font-semibold text-sm">Select Camera</p>
+                    <Select value={selectedCam} onValueChange={async (val) => {
+                        if (val === selectedCam || !scannerRef.current) return;
+                        
+                        setSelectedCam(val);
+                        
+                        await scannerRef.current.stop();  
+                        await scannerRef.current.setCamera(val);
+                        await scannerRef.current.start(); 
+                        
+                        console.log("Selected " + val + " as camera device");
+                    }}>
+                        <SelectTrigger className="w-full max-w-48 md:mx-0 mx-auto my-2 self-start mb-3">
+                            <SelectValue placeholder="Select Device" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Available Devices</SelectLabel>
+                                {cameras.length == 0 ? "No Devices Available" : cameras.map(cam => (
+                                    <SelectItem key={cam.id} value={cam.id} disabled={cam.id == selectedCam}>
+                                        {cam.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
+                </div>
                 <div className="rounded-lg max-w-[23vw] max-h-[23vw] overflow-clip mb-3 bg-muted mx-auto">
                     <video id="qr-reader" className="aspect-square object-fill"></video>
                 </div>
-                <h1 className="text-3xl font-bold h-fit">{isProcessing ? "Processing..." : "Scan Here!"}</h1>
-                <CardDescription>{isProcessing ? "Please wait.x" : "Scan your ID here"}</CardDescription>
+                <h1 className="text-2xl font-bold h-fit">{isProcessing ? "Processing..." : "Scan QR Here!"}</h1>
+                <CardDescription>{isProcessing ? "Please wait" : "Please scan your Student ID here"}</CardDescription>
             </div>
 }

@@ -1,49 +1,35 @@
 "use server";
 
 import prisma from "../prisma";
-import {read, utils, WorkBook} from "xlsx";
+import { read, utils } from "xlsx";
 import { revalidatePath } from "next/cache";
 
 export async function getStudent(id: number) {
     return await prisma.student.findUnique({
-        where: {id}
-    })
+        where: { id }
+    });
 }
 
 export async function importStudents(formData: FormData) {
     const file = formData.get('records') as File;
-    if(!file) return;
+    if (!file) return;
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
+    const buffer = Buffer.from(await file.arrayBuffer());
     const workbook = read(buffer, { type: 'buffer' });
 
-    workbook.SheetNames.forEach(sheetName => {
-        const sheet = workbook.Sheets[sheetName];
-        const rows = utils.sheet_to_json<StudentRow>(sheet);
-
-        const normalized = rows.map(row => ({
-            ...row,
-            "STUDENT NO.": String(row["STUDENT NO."]).replaceAll("-", "")
-        }));
-
-        workbook.Sheets[sheetName] = utils.json_to_sheet(normalized);
-    });
-
-    const g7GradYear = parseInt(getG7GradYear(workbook));
-
     const allStudents = workbook.SheetNames.flatMap(sheetName => {
+        const gradeLevel = parseGradeLevelFromSheet(sheetName);
+        if (gradeLevel === null) {
+            console.warn(`Skipping sheet "${sheetName}" — not a recognized grade sheet.`);
+            return [];
+        }
+
         const rows = utils.sheet_to_json<StudentRow>(workbook.Sheets[sheetName]);
-        return rows.map(row => {
-            const studentGradYear = parseInt(getGradYear(String(row["STUDENT NO."])));
-            const gradeLevel = 7 + (g7GradYear - studentGradYear);
-            return {
-                id: parseInt(row["STUDENT NO."]),
-                name: row.NAME,
-                gradeLevel: gradeLevel,
-            };
-        });
+        return rows.map(row => ({
+            id: parseInt(String(row["STUDENT NO."]).replaceAll("-", "")),
+            name: row.NAME,
+            gradeLevel,
+        }));
     });
 
     await Promise.all(
@@ -59,42 +45,32 @@ export async function importStudents(formData: FormData) {
         )
     );
 
+    const importedIds = new Set(allStudents.map(s => s.id));
+    await prisma.student.updateMany({
+        where: {
+            NOT: {
+                id: { in: Array.from(importedIds) }
+            },
+            gradeLevel: { lte: 12 } 
+        },
+        data: {
+            gradeLevel: 13
+        }
+    });
+
     console.log(`Imported ${allStudents.length} students successfully.`);
     revalidatePath("/students");
 }
 
 type StudentRow = {
-    "STUDENT NO.": string,
-    NAME: string
-}
+    "STUDENT NO.": string;
+    NAME: string;
+};
 
-function getG7GradYear(workbook: WorkBook) {
-    let max = 0;
-    const sheetNames = workbook.SheetNames;
-    const sheets = workbook.Sheets;
-    for(const name in sheets) {
-        const data = utils.sheet_to_json(sheets[name]) as StudentRow[];
-        data.forEach(student => {
-            const id = parseInt(student["STUDENT NO."]);
-            if (id > max) {
-                max = id;
-            } 
-        })
-    }
-
-    return String(max).slice(1, 5);
-}
-
-function getGradYear(id: string) {
-    const padding = id.length - 8;
-    return id.slice(padding + 1, padding + 5);
-}
-
-export async function deleteAllStudents() {
-    const {count} = await prisma.student.deleteMany({});
-    if(count) {
-        console.log("Succesfully deleted all student rows.");
-    } 
-
-    revalidatePath("/students");
+// Parses "G7" -> 7, "G12" -> 12, anything else -> null
+function parseGradeLevelFromSheet(sheetName: string): number | null {
+    const match = sheetName.trim().match(/^G(\d+)$/i);
+    if (!match) return null;
+    const grade = parseInt(match[1]);
+    return grade >= 7 && grade <= 12 ? grade : null;
 }

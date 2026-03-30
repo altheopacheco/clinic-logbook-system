@@ -1,6 +1,5 @@
 import ImportStudentsButton from "./importStudentsButton";
 import StudentsTableCard from "./studentsTableCard";
-import DeleteStudentsButton from "./deleteStudentsButton";
 
 export default async function StudentsPage({
   searchParams
@@ -15,7 +14,6 @@ export default async function StudentsPage({
                 <h1 className="text-3xl font-semibold">Students</h1>
                 <div className="space-x-2">
                     <ImportStudentsButton />
-                    <DeleteStudentsButton />
                 </div>
             </div>
             <StudentsTableCard 
