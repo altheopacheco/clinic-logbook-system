@@ -1,108 +1,270 @@
+<div align="center">
+
 # Clinic Logbook System
 
+**A QR-based clinic logbook system for the PSHS-IRC School Clinic**
+
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)](https://www.prisma.io/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/altheopacheco/clinic-logbook-system)
 
-A modern, web-based logbook application designed to streamline the process of tracking student visits to a school clinic. Built with Next.js and Prisma, it features QR code scanning for efficient check-ins/outs, a real-time dashboard for monitoring, and comprehensive data management tools.
+A modern, web-based logbook application that streamlines the process of tracking student visits to a school clinic. Featuring QR code scanning for instant check-ins/outs, a real-time dashboard, and comprehensive data management tools.
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+  - [Logging In](#logging-in)
+  - [Dashboard](#dashboard)
+  - [QR Code Scanner](#qr-code-scanner)
+  - [Student Management](#student-management)
+  - [Visit Records](#visit-records)
+- [Project Structure](#project-structure)
+- [Database Schema](#database-schema)
+- [Contributing](#contributing)
+
+---
 
 ## Features
 
-- **QR Code Scanner**: Enables quick and error-free logging of student entries and exits using their ID QR codes.
-- **Real-time Dashboard**: An at-a-glance view of current clinic activity, including a list of students currently inside, total visits for the day, and average visit duration.
-- **Student Management**: Easily manage student records. Includes a feature to import student lists directly from an Excel (`.xlsx`) file.
-- **Comprehensive Visit History**: A paginated and filterable table of all visit records. Search by grade level and view details like time-in, time-out, and visit duration.
-- **Data Export**: Export visit records for a selected date range and grade level into an `.xlsx` file for reporting and analysis.
-- **Database Backup**: Create a timestamped backup of the entire SQLite database with a single click.
-- **Secure Authentication**: Protected by a JWT-based session system to ensure only authorized personnel can access the system.
-- **Responsive Design & Dark Mode**: A clean, modern UI that works on various devices and supports both light and dark themes.
+| Feature | Description |
+|---|---|
+| **QR Code Scanner** | Instant student check-in/out via ID QR codes with camera selection support |
+| **Real-time Dashboard** | Live overview of students in clinic, total visits today, and average visit duration |
+| **Student Management** | Full student registry with bulk import from Excel (`.xlsx`) files |
+| **Visit History** | Paginated and filterable records with search by grade level |
+| **Data Export** | Export visit records to `.xlsx` with custom date range and grade level filters |
+| **Database Backup** | One-click timestamped SQLite database backup |
+| **Authentication** | JWT-based session management for authorized access only |
+| **Dark Mode** | System-aware theme toggle with light and dark mode support |
+| **Responsive Design** | Mobile-friendly layout with collapsible navigation |
+
+---
 
 ## Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
-- **Database ORM**: [Prisma](https://www.prisma.io/)
-- **Database**: [SQLite](https://www.sqlite.org/index.html)
-- **Authentication**: JWT (JSON Web Tokens)
-- **QR Scanning**: [qr-scanner](https://github.com/nimiq/qr-scanner)
+<table>
+  <tr>
+    <td><b>Category</b></td>
+    <td><b>Technology</b></td>
+  </tr>
+  <tr>
+    <td>Framework</td>
+    <td><a href="https://nextjs.org/">Next.js 16</a> (App Router)</td>
+  </tr>
+  <tr>
+    <td>Language</td>
+    <td><a href="https://www.typescriptlang.org/">TypeScript 5</a></td>
+  </tr>
+  <tr>
+    <td>Styling</td>
+    <td><a href="https://tailwindcss.com/">Tailwind CSS 4</a></td>
+  </tr>
+  <tr>
+    <td>UI Components</td>
+    <td><a href="https://ui.shadcn.com/">shadcn/ui</a></td>
+  </tr>
+  <tr>
+    <td>Database ORM</td>
+    <td><a href="https://www.prisma.io/">Prisma 7</a></td>
+  </tr>
+  <tr>
+    <td>Database</td>
+    <td><a href="https://www.sqlite.org/">SQLite</a></td>
+  </tr>
+  <tr>
+    <td>Charts</td>
+    <td><a href="https://recharts.org/">Recharts</a></td>
+  </tr>
+  <tr>
+    <td>Authentication</td>
+    <td>JWT (JSON Web Tokens)</td>
+  </tr>
+  <tr>
+    <td>QR Scanning</td>
+    <td><a href="https://github.com/nimiq/qr-scanner">qr-scanner</a></td>
+  </tr>
+</table>
+
+---
 
 ## Getting Started
 
-Follow these instructions to get a local copy of the project up and running for development and testing purposes.
-
 ### Prerequisites
 
-You need to have [Node.js](https://nodejs.org/en/) and npm (or a compatible package manager) installed on your system.
+- [Node.js](https://nodejs.org/) (v18 or later recommended)
+- npm (comes with Node.js)
 
 ### Installation
 
-1.  **Clone the repository**
-    ```sh
-    git clone https://github.com/altheopacheco/clinic-logbook-system.git
-    cd clinic-logbook-system
-    ```
+1. **Clone the repository**
 
-2.  **Install dependencies**
-    ```sh
-    npm install
-    ```
+   ```bash
+   git clone https://github.com/altheopacheco/clinic-logbook-system.git
+   cd clinic-logbook-system
+   ```
 
-3.  **Set up environment variables**
-    Create a `.env` file in the root of the project by copying the example file.
+2. **Install dependencies**
 
-    ```sh
-    cp .env.example .env
-    ```
+   ```bash
+   npm install
+   ```
 
-    Now, open `.env` and fill in the required values:
+3. **Configure environment variables**
 
-    ```env
-    # The default path for the SQLite database file. No changes needed for local setup.
-    DATABASE_URL="file:./clinic.db"
+   ```bash
+   cp .env.example .env
+   ```
 
-    # Set the credentials for logging into the system.
-    SYSTEM_USER="admin"
-    SYSTEM_PASSWORD="your_secure_password"
+   Edit the `.env` file with your settings:
 
-    # A secret key for signing JWTs. Generate a long, random string for this.
-    JWT_SECRET="your_jwt_secret_hash"
-    ```
+   ```env
+   # SQLite database file path (default works for local development)
+   DATABASE_URL="file:./clinic.db"
 
-4.  **Set up the database**
-    Run the Prisma migration command to set up your SQLite database schema. This will create the `clinic.db` file and the necessary tables.
+   # System login credentials
+   SYSTEM_USER="admin"
+   SYSTEM_PASSWORD="your_secure_password"
 
-    ```sh
-    npx prisma migrate deploy
-    ```
+   # JWT signing secret (use a long, random string)
+   JWT_SECRET="your_jwt_secret_hash"
+   ```
 
-5.  **Run the development server**
-    ```sh
-    npm run build
-    npm run start
-    ```
+4. **Set up the database**
 
-The application should now be running at [http://localhost:3000](http://localhost:3000).
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+5. **Build and start the application**
+
+   ```bash
+   npm run build
+   npm run start
+   ```
+
+   The application will be available at **http://localhost:3000**.
+
+> **Development mode:** Use `npm run dev` for hot-reload during development.
+
+---
 
 ## Usage
 
 ### Logging In
 
-Navigate to [http://localhost:3000/login](http://localhost:3000/login) and use the `SYSTEM_USER` and `SYSTEM_PASSWORD` credentials you defined in your `.env` file.
+Navigate to `/login` and enter the `SYSTEM_USER` and `SYSTEM_PASSWORD` credentials configured in your `.env` file. All other routes are protected and require authentication.
 
-### Importing Students
+### Dashboard
 
-The system can import student data from an `.xlsx` file.
+The dashboard provides a real-time overview of clinic activity:
 
-1.  Navigate to the `/students` page.
-2.  Click the `Import Students` button.
-3.  Select your Excel file. The file should have separate sheets for each grade level, named `G7`, `G8`, etc.
-4.  Each sheet must contain columns named `STUDENT NO.` and `NAME`.
+- **Total Visits Today** - Running count of all student visits for the day
+- **Students In Clinic** - Number of students currently checked in
+- **Avg Visit Duration** - Average time students spend in the clinic
+- **Active Visits** - Live table of students currently in the clinic
+- **Completed Visits** - Table of today's completed visits with time-in, time-out, and duration
 
-The system will upsert the student records, updating existing ones and adding new ones. Students from the file are marked as active; any students already in the database but not in the new file will have their grade level updated to `13` (Alumni).
+### QR Code Scanner
 
-### Scanning QR Codes
+1. Navigate to `/scanner`
+2. Grant camera permissions when prompted
+3. Select your preferred camera from the dropdown
+4. Scan a student's ID QR code
+5. The system automatically **logs in** students not currently in the clinic, or **logs out** students who are — a toast notification confirms each action
 
-1.  Navigate to the `/scanner` page.
-2.  Grant camera permissions when prompted.
-3.  Scan a QR code. The data in the QR code should be the student's ID number.
-4.  The system will automatically log the student in if they are not currently in the clinic, or log them out if they are. A toast notification will confirm the action.
+### Student Management
+
+- **View students** at `/students`, filterable by grade level (Grades 7-12)
+- **Import students** from an `.xlsx` file:
+  - Click the **Import Students** button
+  - The Excel file should have sheets named `G7`, `G8`, etc. for each grade level
+  - Each sheet must contain `STUDENT NO.` and `NAME` columns
+  - Existing records are updated (upsert); students not in the file are marked as alumni (Grade 13)
+
+### Visit Records
+
+- **Browse** all visit records at `/visits` with pagination and grade-level filtering
+- **Export** records to `.xlsx` by selecting a date range and grade level
+- **Backup** the entire SQLite database with a single click
+
+---
+
+## Project Structure
+
+```
+clinic-logbook-system/
+├── app/
+│   ├── dashboard/        # Dashboard page with stats cards, active & completed visits
+│   ├── login/            # Authentication page
+│   ├── scanner/          # QR code scanner with camera selection
+│   ├── students/         # Student management with import & grade-level tabs
+│   ├── visits/           # Visit records with export & backup functionality
+│   ├── layout.tsx        # Root layout with navbar, theme provider, toaster
+│   └── globals.css       # Global styles and CSS variables
+├── components/
+│   ├── ui/               # shadcn/ui component library
+│   ├── navbar.tsx         # Responsive navigation bar with auth-aware links
+│   ├── mode-toggle.tsx    # Light/dark mode toggle
+│   └── theme-provider.tsx # next-themes provider wrapper
+├── lib/
+│   ├── actions/          # Server actions (auth, db, students, visits)
+│   ├── prisma.ts         # Prisma client singleton
+│   ├── session.ts        # JWT session management
+│   └── utils.ts          # Shared utility functions
+├── prisma/
+│   ├── schema.prisma     # Database schema (Student, Visit models)
+│   └── migrations/       # Database migration history
+├── public/               # Static assets (logos, audio)
+└── package.json
+```
+
+---
+
+## Database Schema
+
+The application uses a simple two-model schema:
+
+```
+┌─────────────────┐       ┌─────────────────────┐
+│     Student     │       │        Visit         │
+├─────────────────┤       ├─────────────────────┤
+│ id         INT  │◄──┐   │ id        INT (auto) │
+│ name       TEXT │   │   │ timeIn    DATETIME   │
+│ gradeLevel INT  │   │   │ timeOut   DATETIME?  │
+└─────────────────┘   └───│ studentId INT (FK)   │
+                          └─────────────────────┘
+```
+
+- **Student**: Stores student ID numbers, names, and grade levels (7-12, 13 = Alumni)
+- **Visit**: Records each clinic visit with check-in/out timestamps, linked to a student
+
+---
+
+## Contributing
+
+Contributions are welcome! To get started:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'Add your feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+Please ensure your code follows the existing conventions and passes linting (`npm run lint`).
+
+---
+
+<div align="center">
+  <sub>Built for the <b>PSHS-IRC School Clinic</b></sub>
+</div>
