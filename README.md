@@ -1,4 +1,3 @@
-![Ask DeepWiki](public/logo.png)
 # Clinic Logbook System
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/altheopacheco/clinic-logbook-system)
