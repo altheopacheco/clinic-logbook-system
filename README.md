@@ -143,6 +143,8 @@ A modern, web-based logbook application that streamlines the process of tracking
 4. **Set up the database**
 
    ```bash
+   npx prisma generate
+   
    npx prisma migrate deploy
    ```
 
